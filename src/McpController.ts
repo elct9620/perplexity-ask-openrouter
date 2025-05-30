@@ -16,7 +16,7 @@ const routes = app.post('/', async (c) => {
   })
 
   const tool = new OpenRouterAskTool(container.config)
-  const server = new PerplexityAskServer(tool);
+  const server = new PerplexityAskServer(container.config, tool);
 
   await server.connect(transport)
   await transport.handleRequest(req, res, await c.req.json())

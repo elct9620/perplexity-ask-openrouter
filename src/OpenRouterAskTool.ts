@@ -7,7 +7,7 @@ export class OpenRouterAskTool implements PerplexityAskTool {
   ) {}
 
   get baseUrl(): string {
-    return this.config.baseUrl || 'https://api.openrouter.ai/api/v1';
+    return this.config.baseUrl || 'https://openrouter.ai/api/v1';
   }
 
   private get apiKey(): string {

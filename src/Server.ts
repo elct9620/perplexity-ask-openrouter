@@ -9,9 +9,11 @@ import {
 
 import { PERPLEXITY_ASK_TOOL, PERPLEXITY_REASON_TOOL, PERPLEXITY_RESEARCH_TOOL } from './ToolDefinition'
 import { PerplexityAskTool } from './interface'
+import { Config } from './Config'
 
 export default class PerplexityAskServer extends Server {
   constructor(
+    private readonly config: Config,
     private readonly askTool: PerplexityAskTool,
   ) {
     super(
@@ -49,7 +51,7 @@ export default class PerplexityAskServer extends Server {
             throw new Error("Invalid arguments for perplexity_ask: `messages` must be an array.")
           }
 
-          const text = await this.askTool.execute(args.messages, 'perplexity/sonar-pro')
+          const text = await this.askTool.execute(args.messages, this.config.askModel)
 
           return {
             isError: false,
@@ -60,7 +62,7 @@ export default class PerplexityAskServer extends Server {
           if(!Array.isArray(args.messages) || args.messages.length === 0) {
             throw new Error("Invalid arguments for perplexity_research: `messages` must be an array.")
           }
-          const text = await this.askTool.execute(args.messages, 'perplexity/sonar-deep-research')
+          const text = await this.askTool.execute(args.messages, this.config.researchModel)
 
           return {
             isError: false,
@@ -71,7 +73,7 @@ export default class PerplexityAskServer extends Server {
           if(!Array.isArray(args.messages) || args.messages.length === 0) {
             throw new Error("Invalid arguments for perplexity_reason: `messages` must be an array.")
           }
-          const text = await this.askTool.execute(args.messages, 'perplexity/sonar-reasoring-pro')
+          const text = await this.askTool.execute(args.messages, this.config.reasonModel)
 
           return {
             isError: false,
