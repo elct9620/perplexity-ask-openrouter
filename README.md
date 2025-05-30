@@ -40,7 +40,7 @@ The easiest way to run the server is using Docker:
 ```bash
 docker run -p 3000:3000 \
   -e OPENROUTER_API_KEY=your_api_key_here \
-  ghcr.io/yourusername/perplexity-ask-openrouter:latest
+  ghcr.io/elct9620/perplexity-ask-openrouter:latest
 ```
 
 ### Building from Source
@@ -49,17 +49,11 @@ If you prefer to build from source:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/perplexity-ask-openrouter.git
+git clone https://github.com/elct9620/perplexity-ask-openrouter.git
 cd perplexity-ask-openrouter
 
-# Install dependencies
-pnpm install
-
-# Build the project
-pnpm build
-
-# Run the server
-OPENROUTER_API_KEY=your_api_key_here pnpm start
+# Build Docker image
+docker build -t perplexity-ask-openrouter .
 ```
 
 ## API Endpoints
