@@ -1,43 +1,43 @@
 import { Hono } from 'hono';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse'
 import { toReqRes, toFetchResponse } from 'fetch-to-node'
 
 import PerplexityAskServer from './Server'
 import { OpenRouterAskTool } from './OpenRouterAskTool'
 import { container } from './Container'
+import { SseTransport } from './SseTransport'
+import { streamSSE } from 'hono/streaming';
 
 const app = new Hono();
 
 const tool = new OpenRouterAskTool(container.config)
 const server = new PerplexityAskServer(container.config, tool);
-const transports: Record<string, SSEServerTransport> = {}
+const transports: Record<string, SseTransport> = {}
 
 const routes = app.get('/sse', async (c) => {
-  const { req, res } = toReqRes(c.req.raw)
+  return streamSSE(c, async (stream) => {
+    const transport = new SseTransport('/messages', stream)
+    transports[transport.sessionId] = transport
 
-  const transport = new SSEServerTransport('/messages', res)
-  transports[transport.sessionId] = transport
+    stream.onAbort(() => {
+      console.log(`Stream aborted for session ${transport.sessionId}`)
+      delete transports[transport.sessionId]
+    })
 
-  res.on("close", () => {
-    console.log("Response closed for session:", transport.sessionId)
-    delete transports[transport.sessionId]
+    await server.connect(transport)
+
+    while(true) {
+      await stream.sleep(60000) // Keep the connection alive
+    }
   })
-
-  await server.connect(transport)
-
-  return toFetchResponse(res)
 }).post('/messages', async (c) => {
-  const { req, res } = toReqRes(c.req.raw)
   const sessionId = c.req.param('sessionId') || c.req.query('sessionId') || ''
 
-  if (!transports[sessionId]) {
+  const transport = transports[sessionId]
+  if (!transport) {
     return c.json({ error: 'Session not found' }, 404)
   }
 
-  const transport = transports[sessionId]
-  await transport.handlePostMessage(req, res, await c.req.json())
-
-  return toFetchResponse(res)
+  return await transport.handlePostMessage(c)
 })
 
 export default routes
