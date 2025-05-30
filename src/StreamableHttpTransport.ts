@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Reference: https://github.com/modelcontextprotocol/typescript-sdk/blob/590d4841373fc4eb86ecc9079834353a98cb84a3/src/server/streamableHttp.ts
+
 import { Transport } from "@modelcontextprotocol/sdk/shared/transport";
 import {
   isInitializeRequest,
