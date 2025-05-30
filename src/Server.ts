@@ -9,8 +9,16 @@ import {
 
 import { PERPLEXITY_ASK_TOOL, PERPLEXITY_REASON_TOOL, PERPLEXITY_RESEARCH_TOOL } from './ToolDefinition'
 
+export interface PerplexityTool {
+  execute: (args: any) => Promise<string>
+}
+
 export default class PerplexityAskServer extends Server {
-  constructor() {
+  constructor(
+    private readonly askTool: PerplexityTool,
+    private readonly researchTool: PerplexityTool,
+    private readonly reasonTool: PerplexityTool
+  ) {
     super(
       {
         name: 'Perplexity Ask OpenRouter',
@@ -34,11 +42,52 @@ export default class PerplexityAskServer extends Server {
   }
 
   onCallTool = async (request: CallToolRequest): Promise<CallToolResult> => {
-    return {
-      isError: true,
-      content: [
-        { "type": "text", "text": "This tool is not implemented yet." },
-      ]
+    try {
+      const { name, arguments: args } = request.params
+      if (!args) {
+        throw new Error('No arguments provided.')
+      }
+
+      switch(name) {
+        case 'perplexity_ask': {
+          const text = await this.askTool.execute(args)
+
+          return {
+            isError: false,
+            content: [{ type: 'text', text }],
+          }
+        }
+        case 'perplexity_research': {
+          const text = await this.researchTool.execute(args)
+
+          return {
+            isError: false,
+            content: [{ type: 'text', text }],
+          }
+        }
+        case 'perplexity_reason': {
+          const text = await this.reasonTool.execute(args)
+
+          return {
+            isError: false,
+            content: [{ type: 'text', text }],
+          }
+        }
+        default:
+          return {
+            isError: true,
+            content: [
+              { type: 'text', text: `Unknown tool: ${name}` },
+            ],
+          }
+      }
+    } catch(error) {
+      return {
+        isError: true,
+        content: [
+          { type: 'text', text: `Error: ${error instanceof Error ? error.message : String(error)}` },
+        ],
+      }
     }
   }
 }
