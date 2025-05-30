@@ -207,6 +207,10 @@ export class StreamableHttpTransport implements Transport {
         console.log(`Standalone SSE stream closed for session ID: ${this._sessionId}`);
         this._streamMapping.delete(this._standaloneSseStreamId);
       });
+
+      while(!stream.closed) {
+        await stream.sleep(60000);
+      }
     });
   }
 
@@ -435,6 +439,10 @@ export class StreamableHttpTransport implements Transport {
             for (const message of messages) {
               this.onmessage?.(message, { authInfo });
             }
+
+            while(!stream.closed) {
+              await stream.sleep(60000); // Sleep for 60 seconds
+            }
           });
         } else {
           // For JSON responses, we'll collect all responses and send them at once
@@ -626,7 +634,7 @@ export class StreamableHttpTransport implements Transport {
 
         if (allResponsesReady) {
           // End the SSE stream
-          stream.abort()
+          await stream.close()
 
           // Clean up
           for (const id of relatedIds) {

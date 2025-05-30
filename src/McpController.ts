@@ -5,29 +5,21 @@ import { toReqRes, toFetchResponse } from 'fetch-to-node'
 import PerplexityAskServer from './Server'
 import { OpenRouterAskTool } from './OpenRouterAskTool'
 import { container } from './Container'
+import { StreamableHttpTransport } from './StreamableHttpTransport'
 
 const app = new Hono();
 
 const routes = app.post('/', async (c) => {
-  const { req, res } = toReqRes(c.req.raw)
-
-  const transport = new StreamableHTTPServerTransport({
-    sessionIdGenerator: undefined
+  const transport = new StreamableHttpTransport({
+    sessionIdGenerator: undefined,
   })
 
   const tool = new OpenRouterAskTool(container.config)
   const server = new PerplexityAskServer(container.config, tool);
 
   await server.connect(transport)
-  await transport.handleRequest(req, res, await c.req.json())
 
-  res.on("close", () => {
-    console.log("Response closed")
-    transport.close()
-    server.close()
-  })
-
-  return toFetchResponse(res)
+  return transport.handleRequest(c, await c.req.json())
 })
 
 export default routes
