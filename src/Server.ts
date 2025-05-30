@@ -33,9 +33,20 @@ export default class PerplexityAskServer extends Server {
   }
 
   onListTools = async (): Promise<ListToolsResult> => {
-    return {
-      tools: [PERPLEXITY_ASK_TOOL, PERPLEXITY_RESEARCH_TOOL, PERPLEXITY_REASON_TOOL],
+    let tools = []
+    if (!this.config.isDisableAsk) {
+      tools.push(PERPLEXITY_ASK_TOOL)
     }
+
+    if (!this.config.isDisableResearch) {
+      tools.push(PERPLEXITY_RESEARCH_TOOL)
+    }
+
+    if (!this.config.isDisableReason) {
+      tools.push(PERPLEXITY_REASON_TOOL)
+    }
+
+    return { tools }
   }
 
   onCallTool = async (request: CallToolRequest): Promise<CallToolResult> => {
@@ -47,6 +58,15 @@ export default class PerplexityAskServer extends Server {
 
       switch(name) {
         case 'perplexity_ask': {
+          if(this.config.isDisableAsk) {
+            return {
+              isError: true,
+              content: [
+                { type: 'text', text: 'Perplexity Ask tool is disabled.' },
+              ],
+            }
+          }
+
           if(!Array.isArray(args.messages) || args.messages.length === 0) {
             throw new Error("Invalid arguments for perplexity_ask: `messages` must be an array.")
           }
@@ -59,6 +79,15 @@ export default class PerplexityAskServer extends Server {
           }
         }
         case 'perplexity_research': {
+          if(this.config.isDisableResearch) {
+            return {
+              isError: true,
+              content: [
+                { type: 'text', text: 'Perplexity Research tool is disabled.' },
+              ],
+            }
+          }
+
           if(!Array.isArray(args.messages) || args.messages.length === 0) {
             throw new Error("Invalid arguments for perplexity_research: `messages` must be an array.")
           }
@@ -70,6 +99,15 @@ export default class PerplexityAskServer extends Server {
           }
         }
         case 'perplexity_reason': {
+          if(this.config.isDisableReason) {
+            return {
+              isError: true,
+              content: [
+                { type: 'text', text: 'Perplexity Reason tool is disabled.' },
+              ],
+            }
+          }
+
           if(!Array.isArray(args.messages) || args.messages.length === 0) {
             throw new Error("Invalid arguments for perplexity_reason: `messages` must be an array.")
           }
