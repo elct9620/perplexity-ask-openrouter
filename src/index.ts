@@ -8,7 +8,7 @@ import SseController from "./SseController";
 
 const port = Number(process.env.PORT || 3000);
 
-const app = new Hono();
+const app = new Hono({ strict: false });
 app.route("/", SseController);
 app.route("/mcp", McpController);
 
