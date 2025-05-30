@@ -4,10 +4,9 @@ import { toReqRes, toFetchResponse } from 'fetch-to-node'
 
 import PerplexityAskServer from './Server'
 import { OpenRouterAskTool } from './OpenRouterAskTool'
-
+import { container } from './Container'
 
 const app = new Hono();
-const tool = new OpenRouterAskTool('')
 
 const routes = app.post('/', async (c) => {
   const { req, res } = toReqRes(c.req.raw)
@@ -16,6 +15,7 @@ const routes = app.post('/', async (c) => {
     sessionIdGenerator: undefined
   })
 
+  const tool = new OpenRouterAskTool(container.config)
   const server = new PerplexityAskServer(tool);
 
   await server.connect(transport)

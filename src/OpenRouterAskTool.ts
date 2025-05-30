@@ -1,10 +1,24 @@
 import { PerplexityAskTool } from './interface'
+import { Config } from './Config'
 
 export class OpenRouterAskTool implements PerplexityAskTool {
   constructor(
-    private readonly apiKey: string,
-    private readonly baseUrl: string = 'https://openrouter.ai/api/v1',
+    private readonly config: Config,
   ) {}
+
+  get baseUrl(): string {
+    return this.config.baseUrl || 'https://api.openrouter.ai/api/v1';
+  }
+
+  private get apiKey(): string {
+    const key = this.config.apiKey;
+
+    if (!key) {
+      throw new Error('API key is not set in the configuration');
+    }
+
+    return key;
+  }
 
   async execute(messages: Array<{ role: string, content: string }>, model: string = 'perplexity/sonar'): Promise<string> {
     let response;
