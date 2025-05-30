@@ -4,6 +4,7 @@ import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import McpController from './McpController'
 import SseController from './SseController'
+import { container } from './Container'
 
 const port = Number(process.env.PORT || 3000);
 
@@ -18,6 +19,10 @@ const server = serve({
 })
 
 const onShutdown = () => {
+  container.sseTransportRepository.forEach((transport) => {
+    transport.close()
+  })
+
   console.log('Shutting down server...')
   server.close((err: any) => {
     if (err) {
