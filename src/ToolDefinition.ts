@@ -24,7 +24,8 @@ export const PERPLEXITY_ASK_TOOL: Tool = {
           properties: {
             role: {
               type: "string",
-              description: "Role of the message (e.g., system, user, assistant)",
+              description:
+                "Role of the message (e.g., system, user, assistant)",
             },
             content: {
               type: "string",
@@ -60,7 +61,8 @@ export const PERPLEXITY_RESEARCH_TOOL: Tool = {
           properties: {
             role: {
               type: "string",
-              description: "Role of the message (e.g., system, user, assistant)",
+              description:
+                "Role of the message (e.g., system, user, assistant)",
             },
             content: {
               type: "string",
@@ -96,7 +98,8 @@ export const PERPLEXITY_REASON_TOOL: Tool = {
           properties: {
             role: {
               type: "string",
-              description: "Role of the message (e.g., system, user, assistant)",
+              description:
+                "Role of the message (e.g., system, user, assistant)",
             },
             content: {
               type: "string",

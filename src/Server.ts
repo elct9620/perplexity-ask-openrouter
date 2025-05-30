@@ -1,15 +1,19 @@
-import { Server } from '@modelcontextprotocol/sdk/server/index'
+import { Server } from "@modelcontextprotocol/sdk/server/index";
 import {
+  CallToolRequest,
+  CallToolRequestSchema,
+  CallToolResult,
   ListToolsRequestSchema,
   ListToolsResult,
-  CallToolRequestSchema ,
-  CallToolResult,
-  CallToolRequest,
-} from '@modelcontextprotocol/sdk/types'
+} from "@modelcontextprotocol/sdk/types";
 
-import { PERPLEXITY_ASK_TOOL, PERPLEXITY_REASON_TOOL, PERPLEXITY_RESEARCH_TOOL } from './ToolDefinition'
-import { PerplexityAskTool } from './interface'
-import { Config } from './Config'
+import { Config } from "./Config";
+import {
+  PERPLEXITY_ASK_TOOL,
+  PERPLEXITY_REASON_TOOL,
+  PERPLEXITY_RESEARCH_TOOL,
+} from "./ToolDefinition";
+import { PerplexityAskTool } from "./interface";
 
 export default class PerplexityAskServer extends Server {
   constructor(
@@ -18,121 +22,137 @@ export default class PerplexityAskServer extends Server {
   ) {
     super(
       {
-        name: 'Perplexity Ask OpenRouter',
-        version: '0.1.0',
+        name: "Perplexity Ask OpenRouter",
+        version: "0.1.0",
       },
       {
         capabilities: {
           tools: {},
         },
-      }
-    )
+      },
+    );
 
-    this.setRequestHandler(ListToolsRequestSchema, this.onListTools)
-    this.setRequestHandler(CallToolRequestSchema, this.onCallTool)
+    this.setRequestHandler(ListToolsRequestSchema, this.onListTools);
+    this.setRequestHandler(CallToolRequestSchema, this.onCallTool);
   }
 
   onListTools = async (): Promise<ListToolsResult> => {
-    let tools = []
+    let tools = [];
     if (!this.config.isDisableAsk) {
-      tools.push(PERPLEXITY_ASK_TOOL)
+      tools.push(PERPLEXITY_ASK_TOOL);
     }
 
     if (!this.config.isDisableResearch) {
-      tools.push(PERPLEXITY_RESEARCH_TOOL)
+      tools.push(PERPLEXITY_RESEARCH_TOOL);
     }
 
     if (!this.config.isDisableReason) {
-      tools.push(PERPLEXITY_REASON_TOOL)
+      tools.push(PERPLEXITY_REASON_TOOL);
     }
 
-    return { tools }
-  }
+    return { tools };
+  };
 
   onCallTool = async (request: CallToolRequest): Promise<CallToolResult> => {
     try {
-      const { name, arguments: args } = request.params
+      const { name, arguments: args } = request.params;
       if (!args) {
-        throw new Error('No arguments provided.')
+        throw new Error("No arguments provided.");
       }
 
-      switch(name) {
-        case 'perplexity_ask': {
-          if(this.config.isDisableAsk) {
+      switch (name) {
+        case "perplexity_ask": {
+          if (this.config.isDisableAsk) {
             return {
               isError: true,
               content: [
-                { type: 'text', text: 'Perplexity Ask tool is disabled.' },
+                { type: "text", text: "Perplexity Ask tool is disabled." },
               ],
-            }
+            };
           }
 
-          if(!Array.isArray(args.messages) || args.messages.length === 0) {
-            throw new Error("Invalid arguments for perplexity_ask: `messages` must be an array.")
+          if (!Array.isArray(args.messages) || args.messages.length === 0) {
+            throw new Error(
+              "Invalid arguments for perplexity_ask: `messages` must be an array.",
+            );
           }
 
-          const text = await this.askTool.execute(args.messages, this.config.askModel)
+          const text = await this.askTool.execute(
+            args.messages,
+            this.config.askModel,
+          );
 
           return {
             isError: false,
-            content: [{ type: 'text', text }],
-          }
+            content: [{ type: "text", text }],
+          };
         }
-        case 'perplexity_research': {
-          if(this.config.isDisableResearch) {
+        case "perplexity_research": {
+          if (this.config.isDisableResearch) {
             return {
               isError: true,
               content: [
-                { type: 'text', text: 'Perplexity Research tool is disabled.' },
+                { type: "text", text: "Perplexity Research tool is disabled." },
               ],
-            }
+            };
           }
 
-          if(!Array.isArray(args.messages) || args.messages.length === 0) {
-            throw new Error("Invalid arguments for perplexity_research: `messages` must be an array.")
+          if (!Array.isArray(args.messages) || args.messages.length === 0) {
+            throw new Error(
+              "Invalid arguments for perplexity_research: `messages` must be an array.",
+            );
           }
-          const text = await this.askTool.execute(args.messages, this.config.researchModel)
+          const text = await this.askTool.execute(
+            args.messages,
+            this.config.researchModel,
+          );
 
           return {
             isError: false,
-            content: [{ type: 'text', text }],
-          }
+            content: [{ type: "text", text }],
+          };
         }
-        case 'perplexity_reason': {
-          if(this.config.isDisableReason) {
+        case "perplexity_reason": {
+          if (this.config.isDisableReason) {
             return {
               isError: true,
               content: [
-                { type: 'text', text: 'Perplexity Reason tool is disabled.' },
+                { type: "text", text: "Perplexity Reason tool is disabled." },
               ],
-            }
+            };
           }
 
-          if(!Array.isArray(args.messages) || args.messages.length === 0) {
-            throw new Error("Invalid arguments for perplexity_reason: `messages` must be an array.")
+          if (!Array.isArray(args.messages) || args.messages.length === 0) {
+            throw new Error(
+              "Invalid arguments for perplexity_reason: `messages` must be an array.",
+            );
           }
-          const text = await this.askTool.execute(args.messages, this.config.reasonModel)
+          const text = await this.askTool.execute(
+            args.messages,
+            this.config.reasonModel,
+          );
 
           return {
             isError: false,
-            content: [{ type: 'text', text }],
-          }
+            content: [{ type: "text", text }],
+          };
         }
         default:
           return {
             isError: true,
-            content: [
-              { type: 'text', text: `Unknown tool: ${name}` },
-            ],
-          }
+            content: [{ type: "text", text: `Unknown tool: ${name}` }],
+          };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         isError: true,
         content: [
-          { type: 'text', text: `Error: ${error instanceof Error ? error.message : String(error)}` },
+          {
+            type: "text",
+            text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+          },
         ],
-      }
+      };
     }
-  }
+  };
 }
