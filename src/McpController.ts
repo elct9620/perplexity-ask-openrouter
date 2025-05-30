@@ -3,15 +3,11 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { toReqRes, toFetchResponse } from 'fetch-to-node'
 
 import PerplexityAskServer from './Server'
-import { OpenRouterAskTool } from './AskTool'
-import { OpenRouterResearchTool } from './ResearchTool'
-import { OpenRouterReasonTool } from './ReasonTool'
+import { OpenRouterAskTool } from './OpenRouterAskTool'
 
-const askTool = new OpenRouterAskTool();
-const researchTool = new OpenRouterResearchTool();
-const reasonTool = new OpenRouterReasonTool();
 
 const app = new Hono();
+const tool = new OpenRouterAskTool('')
 
 const routes = app.post('/', async (c) => {
   const { req, res } = toReqRes(c.req.raw)
@@ -20,11 +16,7 @@ const routes = app.post('/', async (c) => {
     sessionIdGenerator: undefined
   })
 
-  const server = new PerplexityAskServer(
-    askTool,
-    researchTool,
-    reasonTool
-  );
+  const server = new PerplexityAskServer(tool);
 
   await server.connect(transport)
   await transport.handleRequest(req, res, await c.req.json())

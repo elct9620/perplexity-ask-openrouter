@@ -8,16 +8,11 @@ import {
 } from '@modelcontextprotocol/sdk/types'
 
 import { PERPLEXITY_ASK_TOOL, PERPLEXITY_REASON_TOOL, PERPLEXITY_RESEARCH_TOOL } from './ToolDefinition'
-
-export interface PerplexityTool {
-  execute: (args: any) => Promise<string>
-}
+import { PerplexityAskTool } from './interface'
 
 export default class PerplexityAskServer extends Server {
   constructor(
-    private readonly askTool: PerplexityTool,
-    private readonly researchTool: PerplexityTool,
-    private readonly reasonTool: PerplexityTool
+    private readonly askTool: PerplexityAskTool,
   ) {
     super(
       {
@@ -50,7 +45,11 @@ export default class PerplexityAskServer extends Server {
 
       switch(name) {
         case 'perplexity_ask': {
-          const text = await this.askTool.execute(args)
+          if(!Array.isArray(args.messages) || args.messages.length === 0) {
+            throw new Error("Invalid arguments for perplexity_ask: `messages` must be an array.")
+          }
+
+          const text = await this.askTool.execute(args.messages, 'perplexity/sonar-pro')
 
           return {
             isError: false,
@@ -58,7 +57,10 @@ export default class PerplexityAskServer extends Server {
           }
         }
         case 'perplexity_research': {
-          const text = await this.researchTool.execute(args)
+          if(!Array.isArray(args.messages) || args.messages.length === 0) {
+            throw new Error("Invalid arguments for perplexity_research: `messages` must be an array.")
+          }
+          const text = await this.askTool.execute(args.messages, 'perplexity/sonar-deep-research')
 
           return {
             isError: false,
@@ -66,7 +68,10 @@ export default class PerplexityAskServer extends Server {
           }
         }
         case 'perplexity_reason': {
-          const text = await this.reasonTool.execute(args)
+          if(!Array.isArray(args.messages) || args.messages.length === 0) {
+            throw new Error("Invalid arguments for perplexity_reason: `messages` must be an array.")
+          }
+          const text = await this.askTool.execute(args.messages, 'perplexity/sonar-reasoring-pro')
 
           return {
             isError: false,
