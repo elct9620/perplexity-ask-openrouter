@@ -18,4 +18,8 @@ export class SseTransportRepository {
   public has(sessionId: string): boolean {
     return !!this.transports[sessionId];
   }
+
+  public forEach(callback: (transport: SseTransport) => void): void {
+    Object.values(this.transports).forEach(callback);
+  }
 }
