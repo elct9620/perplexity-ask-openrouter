@@ -23,10 +23,7 @@ const routes = app.get('/sse', async (c) => {
     })
 
     await container.sseMcpServer.connect(transport)
-
-    while(transport.isConnected) {
-      await stream.sleep(60000) // Keep the connection alive
-    }
+    await transport.keepAlive()
   })
 }).post('/messages', async (c) => {
   const sessionId = c.req.param('sessionId') || c.req.query('sessionId') || ''

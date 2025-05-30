@@ -9,7 +9,6 @@ const MAXIMUM_MESSAGE_SIZE = 1024 * 1024 * 4 // 4MB
 
 export class SseTransport implements Transport {
   private readonly _sessionId: string = crypto.randomUUID()
-  private _isConnected: boolean = true
 
   public onclose?: () => void;
   public onerror?: (error: Error) => void;
@@ -26,10 +25,6 @@ export class SseTransport implements Transport {
 
   get sessionId(): string {
     return this._sessionId
-  }
-
-  get isConnected(): boolean {
-    return this._isConnected
   }
 
   async start(): Promise<void> {
@@ -53,8 +48,6 @@ export class SseTransport implements Transport {
   }
 
   async close(): Promise<void> {
-    this._isConnected = false
-
     if(this.stream.closed) {
       return
     }
@@ -72,6 +65,12 @@ export class SseTransport implements Transport {
       event: 'message',
       data: JSON.stringify(message)
     })
+  }
+
+  async keepAlive(): Promise<void> {
+    while(!this.stream.closed) {
+      await this.stream.sleep(60000) // Keep the connection alive every 60 seconds
+    }
   }
 
   async handlePostMessage(context: Context): Promise<Response> {
