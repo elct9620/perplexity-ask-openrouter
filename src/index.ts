@@ -3,10 +3,12 @@ import process from 'node:process'
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import McpController from './McpController'
+import SseController from './SseController'
 
 const port = Number(process.env.PORT || 3000);
 
 const app = new Hono()
+app.route('/', SseController)
 app.route('/mcp', McpController)
 
 console.log(`Starting server on port ${port}...`)
