@@ -1,0 +1,26 @@
+{
+  "name": "perplexity-ask-openrouter",
+  "version": "1.0.0",
+  "description": "Use The Perplexity Ask via OpenRouter",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "rolldown --watch -c",
+    "build": "rolldown -c"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.11.0",
+  "dependencies": {
+    "@hono/node-server": "^1.14.3",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "fetch-to-node": "^2.1.0",
+    "hono": "^4.7.10"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.27",
+    "rolldown": "1.0.0-beta.10",
+    "typescript": "^5.8.3"
+  }
+}
