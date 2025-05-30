@@ -22,6 +22,7 @@ const onShutdown = () => {
   container.sseTransportRepository.forEach((transport) => {
     transport.close()
   })
+  container.sseMcpServer.close()
 
   console.log('Shutting down server...')
   server.close((err: any) => {

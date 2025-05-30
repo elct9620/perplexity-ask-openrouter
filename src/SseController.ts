@@ -11,7 +11,6 @@ import { streamSSE } from 'hono/streaming';
 const app = new Hono();
 
 const tool = new OpenRouterAskTool(container.config)
-const server = new PerplexityAskServer(container.config, tool);
 
 const routes = app.get('/sse', async (c) => {
   return streamSSE(c, async (stream) => {
@@ -23,9 +22,9 @@ const routes = app.get('/sse', async (c) => {
       container.sseTransportRepository.remove(transport.sessionId)
     })
 
-    await server.connect(transport)
+    await container.sseMcpServer.connect(transport)
 
-    while(true) {
+    while(transport.isConnected) {
       await stream.sleep(60000) // Keep the connection alive
     }
   })
