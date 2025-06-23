@@ -43,11 +43,11 @@ This is a **Model Context Protocol (MCP) server** that provides access to Perple
 
 ### Transport Layer
 
-The server supports multiple transport methods:
+The server supports dual transport architecture:
 
-- **SSE (Server-Sent Events)** - Primary transport for real-time communication
-- **HTTP Streaming** - Alternative streaming transport
-- Session management through `SseTransportRepository.ts`
+- **SSE (Server-Sent Events)** - Custom implementation for legacy compatibility
+- **Streamable HTTP** - Official @hono/mcp transport for modern MCP clients
+- Transport tracking through dedicated repository pattern
 
 ### Tool Architecture
 
@@ -61,8 +61,8 @@ Each tool can be individually disabled via environment variables.
 
 ### Key Patterns
 
-- **Repository Pattern** - `SseTransportRepository` manages transport sessions
-- **Strategy Pattern** - Multiple transport strategies (SSE/HTTP)
+- **Repository Pattern** - Both `SseTransportRepository` and `McpTransportRepository` manage transport lifecycle
+- **Dual Transport Strategy** - SSE for legacy, @hono/mcp for modern clients
 - **Dependency Injection** - Simple container-based DI in `Container.ts`
 - **Environment Configuration** - All config through environment variables
 
@@ -78,6 +78,10 @@ Each tool can be individually disabled via environment variables.
 - `rolldown.config.mjs` - Build configuration
 - `Dockerfile` - Multi-stage Docker build for production
 - `.github/workflows/docker-build.yml` - CI/CD pipeline for container builds
+- `SseController.ts` - SSE endpoint implementation (/sse)
+- `McpController.ts` - MCP endpoint implementation (/mcp)
+- `SseTransportRepository.ts` - SSE transport lifecycle management
+- `McpTransportRepository.ts` - MCP transport lifecycle management
 
 ## Development Notes
 
@@ -95,4 +99,32 @@ OpenRouter API calls are centralized in `OpenRouterAskTool.ts`. All Perplexity m
 
 ### Transport Management
 
-When working with real-time features, use the SSE transport system. The `SseTransportRepository` handles session lifecycle management.
+The server implements dual transport management:
+
+#### SSE Transport (/sse endpoint)
+
+- Custom SSE implementation for legacy service compatibility
+- Uses `SseTransportRepository` for session tracking via `transport.sessionId`
+- Supports streaming communication for long-running connections
+
+#### MCP Transport (/mcp endpoint)
+
+- Official @hono/mcp StreamableHTTPTransport implementation
+- Uses `McpTransportRepository` for transport tracking via generated `transportId`
+- Configured with `enableJsonResponse: true` for modern MCP clients
+- Stateless request/response pattern
+
+#### Shutdown Handling
+
+Both transport repositories use the same cleanup pattern:
+
+```typescript
+// Graceful shutdown closes all tracked transports
+const closingTransports = repository.map((transport) => transport.close());
+await Promise.all(closingTransports);
+```
+
+#### Transport Configuration
+
+- **SSE**: Uses `transport.sessionId` directly from transport instance
+- **MCP**: Uses `sessionIdGenerator: undefined` and external `transportId` tracking
