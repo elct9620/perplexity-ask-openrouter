@@ -19,7 +19,7 @@ export class SseTransportRepository {
     return !!this.transports[sessionId];
   }
 
-  public forEach(callback: (transport: SseTransport) => void): void {
-    Object.values(this.transports).forEach(callback);
+  public map<T>(callback: (transport: SseTransport) => T): T[] {
+    return Object.values(this.transports).map(callback);
   }
 }

@@ -18,11 +18,13 @@ const server = serve({
   port,
 });
 
-const onShutdown = () => {
-  container.sseTransportRepository.forEach((transport) => {
-    transport.close();
-  });
-  container.sseMcpServer.close();
+const onShutdown = async () => {
+  const closingTransports = container.sseTransportRepository.map((transport) =>
+    transport.close(),
+  );
+  await Promise.all(closingTransports);
+
+  await container.sseMcpServer.close();
 
   console.log("Shutting down server...");
   server.close((err: any) => {
