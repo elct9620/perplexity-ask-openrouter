@@ -19,11 +19,19 @@ const server = serve({
 });
 
 const onShutdown = async () => {
-  const closingTransports = container.sseTransportRepository.map((transport) =>
-    transport.close(),
+  // Close SSE transports
+  const closingSseTransports = container.sseTransportRepository.map(
+    (transport) => transport.close(),
   );
-  await Promise.all(closingTransports);
+  await Promise.all(closingSseTransports);
 
+  // Close MCP transports
+  const closingMcpTransports = container.mcpTransportRepository.map(
+    (transport) => transport.close(),
+  );
+  await Promise.all(closingMcpTransports);
+
+  // Close the MCP server
   await container.mcpServer.close();
 
   console.log("Shutting down server...");
