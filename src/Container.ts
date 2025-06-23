@@ -5,14 +5,14 @@ import { SseTransportRepository } from "./SseTransportRepository";
 
 export interface Container {
   config: Config;
-  sseMcpServer: PerplexityAskServer;
+  mcpServer: PerplexityAskServer;
   sseTransportRepository: SseTransportRepository;
 }
 
 class InternalContainer implements Container {
   constructor(
     public readonly config: Config,
-    public readonly sseMcpServer: PerplexityAskServer,
+    public readonly mcpServer: PerplexityAskServer,
     public readonly sseTransportRepository: SseTransportRepository,
   ) {}
 }

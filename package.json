@@ -13,9 +13,10 @@
   "license": "MIT",
   "packageManager": "pnpm@10.11.0",
   "dependencies": {
+    "@hono/mcp": "0.1.0",
     "@hono/node-server": "^1.14.3",
-    "@modelcontextprotocol/sdk": "^1.12.1",
-    "hono": "^4.7.10"
+    "@modelcontextprotocol/sdk": "^1.13.0",
+    "hono": "^4.8.2"
   },
   "devDependencies": {
     "@types/node": "^22.15.27",

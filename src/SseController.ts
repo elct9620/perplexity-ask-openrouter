@@ -20,7 +20,7 @@ const routes = app
         container.sseTransportRepository.remove(transport.sessionId);
       });
 
-      await container.sseMcpServer.connect(transport);
+      await container.mcpServer.connect(transport);
       await transport.keepAlive();
     });
   })

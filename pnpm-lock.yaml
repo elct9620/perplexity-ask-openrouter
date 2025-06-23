@@ -7,15 +7,18 @@ settings:
 importers:
   .:
     dependencies:
+      "@hono/mcp":
+        specifier: 0.1.0
+        version: 0.1.0(@modelcontextprotocol/sdk@1.13.1)(hono@4.8.2)
       "@hono/node-server":
         specifier: ^1.14.3
-        version: 1.14.3(hono@4.7.10)
+        version: 1.14.3(hono@4.8.2)
       "@modelcontextprotocol/sdk":
-        specifier: ^1.12.1
-        version: 1.12.1
+        specifier: ^1.13.0
+        version: 1.13.1
       hono:
-        specifier: ^4.7.10
-        version: 4.7.10
+        specifier: ^4.8.2
+        version: 4.8.2
     devDependencies:
       "@types/node":
         specifier: ^22.15.27
@@ -52,6 +55,15 @@ packages:
         integrity: sha512-5n3nTJblwRi8LlXkJ9eBzu+kZR8Yxcc7ubakyQTFzPMtIhFpUBRbsnc2Dv88IZDIbCDlBiWrknhB4Lsz7mg6BA==,
       }
 
+  "@hono/mcp@0.1.0":
+    resolution:
+      {
+        integrity: sha512-IELNnKF5tjbUm+wthfToZrNxZIjs1RWLiwCx8N+m8xfJcL6hfcpj/21Gsw8HL88lbnCh191mbFwYvXnx856QZg==,
+      }
+    peerDependencies:
+      "@modelcontextprotocol/sdk": ^1.12.0
+      hono: "*"
+
   "@hono/node-server@1.14.3":
     resolution:
       {
@@ -61,10 +73,10 @@ packages:
     peerDependencies:
       hono: ^4
 
-  "@modelcontextprotocol/sdk@1.12.1":
+  "@modelcontextprotocol/sdk@1.13.1":
     resolution:
       {
-        integrity: sha512-KG1CZhZfWg+u8pxeM/mByJDScJSrjjxLc8fwQqbsS8xCjBmQfMNEBTotYdNanKekepnfRI85GtgQlctLFpcYPw==,
+        integrity: sha512-8q6+9aF0yA39/qWT/uaIj6zTpC+Qu07DnN/lb9mjoquCJsAh6l3HyYqc9O3t2j7GilseOQOQimLg7W3By6jqvg==,
       }
     engines: { node: ">=18" }
 
@@ -468,10 +480,10 @@ packages:
       }
     engines: { node: ">= 0.4" }
 
-  hono@4.7.10:
+  hono@4.8.2:
     resolution:
       {
-        integrity: sha512-QkACju9MiN59CKSY5JsGZCYmPZkA6sIW6OFCUp7qDjZu6S6KHtJHhAc9Uy9mV9F8PJ1/HQ3ybZF2yjCa/73fvQ==,
+        integrity: sha512-hM+1RIn9PK1I6SiTNS6/y7O1mvg88awYLFEuEtoiMtRyT3SD2iu9pSFgbBXT3b1Ua4IwzvSTLvwO0SEhDxCi4w==,
       }
     engines: { node: ">=16.9.0" }
 
@@ -873,11 +885,16 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  "@hono/node-server@1.14.3(hono@4.7.10)":
+  "@hono/mcp@0.1.0(@modelcontextprotocol/sdk@1.13.1)(hono@4.8.2)":
     dependencies:
-      hono: 4.7.10
+      "@modelcontextprotocol/sdk": 1.13.1
+      hono: 4.8.2
 
-  "@modelcontextprotocol/sdk@1.12.1":
+  "@hono/node-server@1.14.3(hono@4.8.2)":
+    dependencies:
+      hono: 4.8.2
+
+  "@modelcontextprotocol/sdk@1.13.1":
     dependencies:
       ajv: 6.12.6
       content-type: 1.0.5
@@ -1131,7 +1148,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.7.10: {}
+  hono@4.8.2: {}
 
   http-errors@2.0.0:
     dependencies:

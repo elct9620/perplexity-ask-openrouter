@@ -24,7 +24,7 @@ const onShutdown = async () => {
   );
   await Promise.all(closingTransports);
 
-  await container.sseMcpServer.close();
+  await container.mcpServer.close();
 
   console.log("Shutting down server...");
   server.close((err: any) => {

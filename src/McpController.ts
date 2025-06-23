@@ -1,23 +1,19 @@
+import { StreamableHTTPTransport } from "@hono/mcp";
 import { Hono } from "hono";
 
 import { container } from "./Container";
-import { OpenRouterAskTool } from "./OpenRouterAskTool";
-import PerplexityAskServer from "./Server";
-import { StreamableHttpTransport } from "./StreamableHttpTransport";
 
 const app = new Hono();
 
-const routes = app.post("/", async (c) => {
-  const transport = new StreamableHttpTransport({
+const routes = app.all("/", async (c) => {
+  const transport = new StreamableHTTPTransport({
     sessionIdGenerator: undefined,
+    enableJsonResponse: true,
   });
 
-  const tool = new OpenRouterAskTool(container.config);
-  const server = new PerplexityAskServer(container.config, tool);
+  await container.mcpServer.connect(transport);
 
-  await server.connect(transport);
-
-  return transport.handleRequest(c, await c.req.json());
+  return transport.handleRequest(c);
 });
 
 export default routes;
